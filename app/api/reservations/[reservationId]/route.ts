@@ -1,38 +1,31 @@
 import { NextResponse } from "next/server";
-
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
-import getReservations from "@/app/actions/getReservations";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
 interface IParams {
-    reservationId?: string;
+  reservationId?: string;
 };
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: IParams }
+  request: Request,
+  { params }: { params: IParams }
 ) {
-    const currentUser = await getCurrentUser();
-
-    if (!currentUser) {
-        return NextResponse.error();
-    }
-
-    const { reservationId } = params;
-    
-    if (!reservationId || typeof reservationId !== 'string') {
-        throw new Error('Invalid ID');
-    }
-
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return NextResponse.error();
+  }
+  const { reservationId } = params;
+  if (!reservationId || typeof reservationId !== 'string') {
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+  }
+  try {
     const reservation = await prisma.reservation.deleteMany({
-        where: {
-            id: reservationId,
-            OR: [
-                { userId: currentUser.id },
-                { listing: { userId: currentUser.id }}
-            ]
-        }
+      where: {
+        id: reservationId,
+      }
     });
-
     return NextResponse.json(reservation);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
+  }
 }

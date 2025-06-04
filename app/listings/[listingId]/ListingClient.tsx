@@ -25,6 +25,7 @@ interface ListingClientProps {
     reservations?: SafeReservation[]
     listing: SafeListing & {
         user: SafeUser
+        imageSrc: string[] // Change to array
     };
     currentUser?: SafeUser | null;
 }
@@ -114,7 +115,7 @@ const ListingClient:React.FC<ListingClientProps> = ({
                 <div className="flex flex-col gap-6">
                     <ListingHead
                         title={listing.title}
-                        imageSrc={listing.imageSrc}
+                        imageSrc={Array.isArray(listing.imageSrc) ? listing.imageSrc : [listing.imageSrc]}
                         locationValue={listing.locationValue}
                         id={listing.id}
                         currentUser={currentUser}

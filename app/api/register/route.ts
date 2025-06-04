@@ -12,13 +12,18 @@ export async function POST(
         password
     } = body;
 
+    if (!email || !email.includes('@')) {
+        return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 12);
     
     const user = await prisma?.user.create({
         data: {
             email,
             name,
-            hashedPassword
+            hashedPassword,
+            role: "user" // Set default role
         }
     });
 

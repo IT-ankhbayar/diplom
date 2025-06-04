@@ -32,3 +32,19 @@ export async function DELETE(
     
     return NextResponse.json(listing);
 }
+
+export async function POST(
+  request: Request,
+  { params }: { params: { listingId: string } }
+) {
+  const { listingId } = params;
+  if (!listingId) {
+    return NextResponse.json({ error: "Listing ID required" }, { status: 400 });
+  }
+  try {
+    await prisma.listing.delete({ where: { id: listingId } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete property" }, { status: 500 });
+  }
+}

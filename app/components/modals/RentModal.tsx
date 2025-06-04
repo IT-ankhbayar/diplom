@@ -48,8 +48,8 @@ const RentModal = () => {
             location: null,
             guestCount: 1,
             roomCount: 1,
-            bathroomCount: 1,
-            imageSrc: '',
+            bathroomCount: 1, // Changed back from bedCount
+            imageSrc: [],
             price: 1,
             title: '',
             description: ''
@@ -60,7 +60,7 @@ const RentModal = () => {
     const location = watch('location');
     const guestCount = watch('guestCount');
     const roomCount = watch('roomCount');
-    const bathroomCount = watch('bathroomCount');
+    const bathroomCount = watch('bathroomCount'); // Renamed from bedCount
     const imageSrc = watch('imageSrc');
 
     const Map = useMemo(() => dynamic(() => import('../Map'), {
@@ -83,25 +83,28 @@ const RentModal = () => {
         setStep((value) => value + 1);
     }
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         if (step !== STEPS.PRICE) {
             return onNext();
         }
         setIsLoading(true);
 
-        axios.post('/api/listings', data)
-        .then(() => {
-            toast.success('Listing Created!');
-            router.refresh();
-            reset();
-            setStep(STEPS.CATEGORY);
-            rentModal.onClose();
-        })
-        .catch(() => {
-            toast.error('Something went wrong.');
-        }).finally(() => {
-            setIsLoading(false);
-        })
+        // Directly use imageSrc as an array of URLs from Cloudinary
+        const submitData = { ...data, imageSrc: data.imageSrc };
+
+        axios.post('/api/listings', submitData)
+            .then(() => {
+                toast.success('Listing Created!');
+                router.refresh();
+                reset();
+                setStep(STEPS.CATEGORY);
+                rentModal.onClose();
+            })
+            .catch(() => {
+                toast.error('Something went wrong.');
+            }).finally(() => {
+                setIsLoading(false);
+            });
     }
 
     const actionLabel = useMemo(() => {
@@ -142,16 +145,20 @@ const RentModal = () => {
 
     if (step === STEPS.LOCATION) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 items-center">
                 <Heading 
-                    title="Таны газар хаана байрладаг вэ?"
-                    subtitle="Зочдод таныг олоход тусална уу!"
+                    title="Байршлын хайлт"
+                    subtitle="Дүүрэг, хороо, гудамж эсвэл газрын зураг дээрээс сонгоно уу."
                 />
-                <CountrySelect 
-                    value={location}
-                    onChange={(value) => setCustomValue('location', value)}
-                />
-                <Map center={location?.latlng} />
+                <div className="bg-white rounded-xl shadow p-6 flex flex-col gap-4">
+                    <CountrySelect 
+                        value={location}
+                        onChange={(value) => setCustomValue('location', value)}
+                    />
+                    <div className="rounded-lg overflow-hidden border border-neutral-200">
+                        <Map center={location?.latlng} />
+                    </div>
+                </div>
             </div>
         )
     }
@@ -260,6 +267,8 @@ const RentModal = () => {
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title='Your home'
             body={bodyContent}
+            // Add a callback to redirect to profile after successful creation
+            afterClose={() => router.push('/profile')}
         />
     );
 }

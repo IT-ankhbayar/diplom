@@ -25,12 +25,15 @@ export async function POST(request: Request) {
       price,
     } = body;
 
+    // Ensure imageSrc is always an array of up to 5 images
+    const images = Array.isArray(imageSrc) ? imageSrc.slice(0, 5) : [imageSrc];
+
     // Шинэ listing үүсгэх
     const listing = await prisma.listing.create({
       data: {
         title,
         description,
-        imageSrc,
+        imageSrc: images,
         category,
         roomCount,
         bathroomCount,

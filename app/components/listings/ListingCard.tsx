@@ -57,12 +57,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
             className='col-span-1 cursor-pointer group'>
             <div className='flex flex-col gap-2 w-full'>
                 <div className='aspect-square w-full relative overflow-hidden rounded-xl'>
-                    <Image 
-                        fill
-                        alt="Listing"
-                        src={data.imageSrc}
-                        className="object-cover h-full w-full group-hover:scale-110 transition"
-                    />
+                    {/* Defensive check: only render <img> if src is a non-empty string */}
+                    {Array.isArray(data.imageSrc) && data.imageSrc[0] && typeof data.imageSrc[0] === 'string' && data.imageSrc[0].trim() !== '' ? (
+                        <Image 
+                            fill
+                            alt="Listing"
+                            src={data.imageSrc[0]}
+                            className="object-cover h-full w-full group-hover:scale-110 transition"
+                        />
+                    ) : null}
                     <div className='absolute top-3 right-3'>
                         <HeartButton 
                             listingId={data.id}
@@ -77,7 +80,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     {reservationDate || data.category}
                 </div>
                 <div className='font-semibold'>
-                    ${price}
+                    {price.toLocaleString()}₮
                 </div>
                 {actionLabel && onAction && (
                     <Button 
