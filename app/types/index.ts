@@ -28,4 +28,6 @@ export type SafeUser = Omit<
     updatedAt: string;
     emailVerified: string | null;
     role: string; // Add role to SafeUser
+    verified: boolean;
+    verificationImage?: string;
 };

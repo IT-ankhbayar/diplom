@@ -11,7 +11,15 @@ async function main() {
 
   const existing = await adminPrisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log("Admin user already exists.");
+    await adminPrisma.user.update({
+      where: { email },
+      data: {
+        hashedPassword,
+        role: "admin",
+        emailVerified: new Date(),
+      },
+    });
+    console.log("Admin user already exists. Password and role updated.");
     return;
   }
 

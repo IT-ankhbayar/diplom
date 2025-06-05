@@ -26,11 +26,13 @@ export default async function getCurrentUser() {
         }
 
         return {
-            ... currentUser,
+            ...currentUser,
             createdAt: currentUser.createdAt.toISOString(),
             updatedAt: currentUser.updatedAt.toISOString(),
             emailVerified: currentUser.emailVerified?.toISOString() || null,
-            role: currentUser.role // Add role to returned user
+            role: currentUser.role,
+            verified: currentUser.verified,
+            verificationImage: currentUser.verificationImage
         };
         
     } catch (error: any) {

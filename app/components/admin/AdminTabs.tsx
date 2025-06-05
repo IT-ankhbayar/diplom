@@ -85,7 +85,35 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
                   <td className="border px-4 py-2">{user.role}</td>
                   <td className="border px-4 py-2">
                     {user.verificationImage ? (
-                      <img src={user.verificationImage} alt="ID" className="w-24 h-16 object-cover rounded shadow" />
+                      <div className="flex items-start gap-4">
+                        <a href={user.verificationImage} target="_blank" rel="noopener noreferrer">
+                          <img src={user.verificationImage} alt="ID" className="w-24 h-16 object-cover rounded shadow hover:scale-150 hover:z-10 transition-transform duration-200" />
+                        </a>
+                        <div className="flex flex-col justify-center min-w-[120px]">
+                          {user.verificationImage && (
+                            <button
+                              onClick={async () => {
+                                const newVerified = !user.verified;
+                                await fetch(`/api/users/${user.id}`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ verified: newVerified })
+                                });
+                                setLocalUsers(localUsers.map(u => u.id === user.id ? { ...u, verified: newVerified } : u));
+                              }}
+                              className={`mb-1 ${user.verified ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white px-2 py-1 rounded transition w-full text-sm`}
+                            >
+                              {user.verified ? 'Баталгаажаагүй болгох' : 'Баталгаажуулах'}
+                            </button>
+                          )}
+                          {user.verified && (
+                            <span className="text-green-600 font-bold text-sm">Баталгаажсан ✔</span>
+                          )}
+                          {!user.verified && (
+                            <span className="text-gray-500 text-xs mt-1">Зураг дээр дарж томоор харах боломжтой.</span>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <span className="text-neutral-400">-</span>
                     )}

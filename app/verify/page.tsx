@@ -10,7 +10,12 @@ export default function VerifyPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would send the image to your backend for verification
+    if (!image[0]) return;
+    await fetch("/api/users/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ verificationImage: image[0] })
+    });
     setSubmitted(true);
   };
 
