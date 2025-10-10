@@ -1,6 +1,4 @@
 import ClientOnly from "../components/ClientOnly";
-import Container from "../components/Container";
-import Heading from "../components/Heading";
 import getCurrentUser from '../actions/getCurrentUser';
 import getReservations from '../actions/getReservations';
 import getListings from '../actions/getListings';
