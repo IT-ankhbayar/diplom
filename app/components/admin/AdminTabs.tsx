@@ -1,17 +1,45 @@
 "use client";
 import { useState } from "react";
 
+// Minimal types used by the admin UI. These keep the component strongly typed
+// without depending on Prisma types directly.
+type AdminUser = {
+  id: number;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+  verificationImage?: string | null;
+  verified?: boolean | null;
+};
+
+type AdminListing = {
+  id: number;
+  title?: string | null;
+  category?: string | null;
+  price?: number | null;
+  userId?: number | null;
+};
+
+type AdminReservation = {
+  id: number;
+  userId?: number | null;
+  listing?: { title?: string | null } | null;
+  startDate?: string | Date | null;
+  endDate?: string | Date | null;
+  totalPrice?: number | null;
+};
+
 interface AdminTabsProps {
-  users: any[];
-  reservations: any[];
-  listings: any[];
+  users: AdminUser[];
+  reservations: AdminReservation[];
+  listings: AdminListing[];
 }
 
 const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) => {
-  const [tab, setTab] = useState("users");
-  const [localUsers, setLocalUsers] = useState(users);
-  const [localListings, setLocalListings] = useState(listings);
-  const [localReservations, setLocalReservations] = useState(reservations);
+  const [tab, setTab] = useState<string>("users");
+  const [localUsers, setLocalUsers] = useState<AdminUser[]>(users);
+  const [localListings, setLocalListings] = useState<AdminListing[]>(listings);
+  const [localReservations, setLocalReservations] = useState<AdminReservation[]>(reservations);
   const [message, setMessage] = useState("");
   const [propertyMessage, setPropertyMessage] = useState("");
   const [orderMessage, setOrderMessage] = useState("");
@@ -148,9 +176,9 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
                   <td className="border px-4 py-2">{order.id}</td>
                   <td className="border px-4 py-2">{order.userId}</td>
                   <td className="border px-4 py-2">{order.listing?.title}</td>
-                  <td className="border px-4 py-2">{new Date(order.startDate).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{new Date(order.endDate).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{order.totalPrice.toLocaleString()}₮</td>
+                  <td className="border px-4 py-2">{order.startDate ? new Date(order.startDate).toLocaleDateString() : '-'}</td>
+                  <td className="border px-4 py-2">{order.endDate ? new Date(order.endDate).toLocaleDateString() : '-'}</td>
+                  <td className="border px-4 py-2">{order.totalPrice != null ? `${order.totalPrice.toLocaleString()}₮` : '-'}</td>
                   <td className="border px-4 py-2">
                     <button onClick={() => handleOrderDelete(order.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition">Delete</button>
                   </td>
@@ -180,7 +208,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
                   <td className="border px-4 py-2">{listing.id}</td>
                   <td className="border px-4 py-2">{listing.title}</td>
                   <td className="border px-4 py-2">{listing.category}</td>
-                  <td className="border px-4 py-2">{listing.price.toLocaleString()}₮</td>
+                  <td className="border px-4 py-2">{listing.price != null ? `${listing.price.toLocaleString()}₮` : '-'}</td>
                   <td className="border px-4 py-2">{listing.userId}</td>
                   <td className="border px-4 py-2">
                     <button onClick={() => handlePropertyDelete(listing.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition">Delete</button>

@@ -1,6 +1,6 @@
 import prisma from './prismadb';
 
-async function getReservations(authorId: string) {
+export async function getReservations(authorId: string) {
   try {
     const reservationsRaw = await prisma.reservation.findMany({
       where: {

@@ -45,7 +45,8 @@ const useFavorite = ({
             await request();
             router.refresh();
             toast.success('Success');
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error('Toggle favorite error:', error);
             toast.error('Something went wrong.');
         }
     },

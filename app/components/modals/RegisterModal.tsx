@@ -42,7 +42,8 @@ const RegisterModal = () => {
                 registerModal.onClose();
                 loginModal.onOpen();
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
+                console.error('Register error:', error);
                 toast.error('Something went wrong.');
             })
             .finally(() => {

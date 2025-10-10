@@ -63,12 +63,15 @@ const RentModal = () => {
     const bathroomCount = watch('bathroomCount'); 
     const imageSrc = watch('imageSrc');
 
+    // Map component is dynamically imported and does not depend on the current location value.
+    // Remove `location` from the dependency array to avoid the exhaustive-deps warning.
     const Map = useMemo(() => dynamic(() => import('../Map'), {
         ssr: false
-    }), [location]);
+    }), []);
 
-    const setCustomValue = (id: string, value: any) => {
-        setValue(id, value, {
+    const setCustomValue = (id: string, value: unknown) => {
+        // react-hook-form's setValue accepts any, so cast the narrowed unknown when calling it.
+        setValue(id, value as any, {
             shouldValidate: true,
             shouldDirty: true,
             shouldTouch: true,

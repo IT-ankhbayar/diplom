@@ -6,12 +6,13 @@ import ReservationsClient from "../reservations/ReservationsClient";
 import PropertiesClient from "../properties/PropertiesClient";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SafeReservation, SafeListing, SafeUser } from '@/app/types';
 
 interface ProfileTabsProps {
-  trips: any[];
-  orders: any[];
-  properties: any[];
-  currentUser: any;
+  trips: SafeReservation[];
+  orders: SafeReservation[];
+  properties: SafeListing[];
+  currentUser?: SafeUser | null;
 }
 
 const ProfileTabs: React.FC<ProfileTabsProps> = ({ trips, orders, properties, currentUser }) => {
@@ -31,7 +32,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({ trips, orders, properties, cu
       <Heading title="" subtitle="" />
       <div className="flex gap-4 mt-8 mb-8 justify-center">
         <button
-          className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-150 ${tab === 'trips' ? 'bg-red-600 text-white' : 'bg-gray-100 hover:bg-`blue`-100'}`}
+          className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-150 ${tab === 'trips' ? 'bg-red-600 text-white' : 'bg-gray-100 hover:bg-blue-100'}`}
           onClick={() => setTab('trips')}
         >Миний аяллууд</button>
         <button

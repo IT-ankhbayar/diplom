@@ -42,7 +42,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(listing);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
     console.error("Error creating listing:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }

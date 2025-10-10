@@ -38,9 +38,10 @@ const SearchModal = () => {
         key: 'selection'
     });
 
+    // Map does not need to be re-created when `location` changes; it can be created once.
     const Map = useMemo(() => dynamic(() => import('../Map'), {
         ssr: false,
-    }), [location]);
+    }), []);
 
     const onBack = useCallback(() => {
         setStep((value) => value - 1);

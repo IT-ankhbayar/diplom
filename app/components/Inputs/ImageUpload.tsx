@@ -14,10 +14,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
     const handleUpload = useCallback(() => {
         if (typeof window === 'undefined') return;
+        // Cloudinary is injected on window by their widget script. Narrow safely from unknown.
+        const w = window as unknown as { cloudinary?: any };
+        const cloudinary = w.cloudinary;
 
-        const cloudinary = (window as any).cloudinary;
-
-        if (!cloudinary || !cloudinary.createUploadWidget) {
+        if (!cloudinary || typeof cloudinary.createUploadWidget !== 'function') {
             alert('Cloudinary upload widget is not loaded. Please check your Cloudinary setup.');
             return;
         }
@@ -29,9 +30,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 multiple: true,
                 maxFiles: 5,
             },
-            (error: any, result: any) => {
-                if (!error && result && result.event === "success") {
-                    const url = result.info.secure_url;
+            (error: unknown, result: unknown) => {
+                // narrow result shape safely
+                if (error) {
+                    console.error('Cloudinary widget error:', error);
+                    return;
+                }
+
+                const res = result as { event?: string; info?: { secure_url?: string } } | undefined;
+                if (res && res.event === 'success' && res.info && res.info.secure_url) {
+                    const url = res.info.secure_url;
                     if (url && !value.includes(url) && value.length < 5) {
                         onChange([...value, url]);
                     }
