@@ -34,8 +34,15 @@ export default async function getListingById(params: IParams) {
           }
         : null, 
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // Log for debugging; reference the error to avoid unused var lint warnings
+    // eslint-disable-next-line no-console
     console.error("Error fetching listing:", error);
-    throw new Error(error.message || "Something went wrong");
+
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+
+    throw new Error(String(error ?? "Something went wrong"));
   }
 }
