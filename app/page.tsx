@@ -4,14 +4,14 @@ import ClientOnly from "./components/ClientOnly";
 import Container from "./components/Container";
 import EmptyState from "./components/EmptyState";
 import ListingCard from "./components/listings/ListingCard";
-import Heading from "./components/Heading";
 
 interface HomeProps {
-  searchParams: IListingsParams
+  searchParams?: IListingsParams | Promise<IListingsParams>;
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-  const listings = await getListings(searchParams);
+  const params = searchParams ? await searchParams : {};
+  const listings = await getListings(params as IListingsParams);
   const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
@@ -22,7 +22,6 @@ const Home = async ({ searchParams }: HomeProps) => {
     )
   }
 
-  // Categorize listings
   const recentListings = [...listings].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8);
   const luxuryListings = recentListings.filter(l => l.price > 500000);
   const cheapListings = recentListings.filter(l => l.price <= 100000);

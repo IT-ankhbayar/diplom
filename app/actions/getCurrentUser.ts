@@ -35,7 +35,11 @@ export default async function getCurrentUser() {
             verificationImage: currentUser.verificationImage
         };
         
-    } catch (error: any) {
+    } catch (error: unknown) {
+        // Log the error for debugging; keep return value consistent
+        // `unknown` avoids use of `any` and satisfies lint rules when we reference it.
+        // eslint-disable-next-line no-console
+        console.error('getCurrentUser error:', error);
         return null;
     }
 }
