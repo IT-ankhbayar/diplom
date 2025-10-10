@@ -15,7 +15,8 @@ export async function PATCH(request: Request) {
       data: { verificationImage },
     });
     return NextResponse.json(updatedUser);
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Failed to update verification image:', error);
     return NextResponse.json({ error: "Failed to update verification image" }, { status: 500 });
   }
 }

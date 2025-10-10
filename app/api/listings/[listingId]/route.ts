@@ -46,7 +46,6 @@ export async function POST(
     return NextResponse.json({ success: true });
   } catch (error) {
     // Log error for debugging
-    // eslint-disable-next-line no-console
     console.error('Failed to delete listing:', error);
     return NextResponse.json({ error: "Failed to delete property" }, { status: 500 });
   }

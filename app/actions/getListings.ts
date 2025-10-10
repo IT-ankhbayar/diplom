@@ -93,7 +93,6 @@ export default async function getListings(
         return safeListings;
     } catch (error: unknown) {
         // Log error for debugging
-        // eslint-disable-next-line no-console
         console.error('getListings error:', error);
 
         if (error instanceof Error) {

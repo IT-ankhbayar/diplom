@@ -53,7 +53,6 @@ export default async function getReservations(
 
         return safeReservations;
     } catch (error: unknown) {
-        // eslint-disable-next-line no-console
         console.error('getReservations error:', error);
         if (error instanceof Error) {
             throw new Error(error.message);

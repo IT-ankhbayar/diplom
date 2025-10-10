@@ -13,7 +13,6 @@ export async function POST(
     await prisma.user.delete({ where: { id: userId } });
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    // eslint-disable-next-line no-console
     console.error('Failed to delete user:', error);
     return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
   }
@@ -39,7 +38,6 @@ export async function PATCH(
     });
     return NextResponse.json(updatedUser);
   } catch (error: unknown) {
-    // eslint-disable-next-line no-console
     console.error('Failed to update user:', error);
     return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
   }

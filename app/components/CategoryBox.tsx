@@ -24,8 +24,11 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             currentQuery = qs.parse(params.toString());
         }
 
-        const updatedQuery: any = {
-            ... currentQuery,
+        type QueryValue = string | number | boolean | undefined | string[];
+        type QueryObject = Record<string, QueryValue>;
+
+        const updatedQuery: QueryObject = {
+            ... currentQuery as Record<string, QueryValue>,
             category: label
         }
 

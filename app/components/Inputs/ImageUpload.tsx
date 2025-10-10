@@ -15,7 +15,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const handleUpload = useCallback(() => {
         if (typeof window === 'undefined') return;
         // Cloudinary is injected on window by their widget script. Narrow safely from unknown.
-        const w = window as unknown as { cloudinary?: any };
+        type CloudinaryWidget = {
+            createUploadWidget: (options: any, callback: (error: unknown, result: unknown) => void) => { open: () => void };
+        };
+        const w = window as unknown as { cloudinary?: CloudinaryWidget };
         const cloudinary = w.cloudinary;
 
         if (!cloudinary || typeof cloudinary.createUploadWidget !== 'function') {
