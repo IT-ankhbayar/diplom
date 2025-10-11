@@ -26,7 +26,6 @@ export async function DELETE(
     });
     return NextResponse.json(reservation);
   } catch (error: unknown) {
-    // eslint-disable-next-line no-console
     console.error('Failed to delete reservation:', error);
     return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
   }
