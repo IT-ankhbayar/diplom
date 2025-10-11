@@ -4,7 +4,9 @@ import prisma from "@/app/libs/prismadb";
 
 export async function POST(
     request: Request,
-    { params }: { params: { listingId: string } }
+    // Next's internal types can be strict; accept the context as any to be compatible with the runtime shape.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: any
 ) {
     const currentUser = await getCurrentUser();
 
@@ -12,9 +14,10 @@ export async function POST(
         return NextResponse.error();
     }
 
+    const { params } = context;
     const { listingId } = params;
 
-    if (!listingId || typeof listingId !== 'string') {
+    if (!listingId || Array.isArray(listingId) || typeof listingId !== 'string') {
         throw new Error('Invalid ID');
     }
 
@@ -34,7 +37,8 @@ export async function POST(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { listingId: string } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: any
 ) {
     const currentUser = await getCurrentUser();
 
@@ -42,9 +46,10 @@ export async function DELETE(
         return NextResponse.error();
     }
 
+    const { params } = context;
     const { listingId } = params;
 
-    if (!listingId || typeof listingId !== 'string') {
+    if (!listingId || Array.isArray(listingId) || typeof listingId !== 'string') {
         throw new Error('Invalid ID');
     }
 
