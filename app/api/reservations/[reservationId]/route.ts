@@ -4,14 +4,16 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { reservationId: string } }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any
 ) {
   const currentUser = await getCurrentUser();
   if (!currentUser) {
     return NextResponse.error();
   }
+  const { params } = context;
   const { reservationId } = params;
-  if (!reservationId || typeof reservationId !== 'string') {
+  if (!reservationId || Array.isArray(reservationId) || typeof reservationId !== 'string') {
     return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
   }
   try {
