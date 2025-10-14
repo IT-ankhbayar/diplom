@@ -5,7 +5,7 @@ import Image from 'next/image';
 // Minimal types used by the admin UI. These keep the component strongly typed
 // without depending on Prisma types directly.
 type AdminUser = {
-  id: number;
+  id: string;
   name?: string | null;
   email?: string | null;
   role?: string | null;
@@ -14,16 +14,16 @@ type AdminUser = {
 };
 
 type AdminListing = {
-  id: number;
+  id: string;
   title?: string | null;
   category?: string | null;
   price?: number | null;
-  userId?: number | null;
+  userId?: string | null;
 };
 
 type AdminReservation = {
-  id: number;
-  userId?: number | null;
+  id: string;
+  userId?: string | null;
   listing?: { title?: string | null } | null;
   startDate?: string | Date | null;
   endDate?: string | Date | null;
@@ -45,7 +45,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
   const [propertyMessage, setPropertyMessage] = useState("");
   const [orderMessage, setOrderMessage] = useState("");
 
-  const handleUserDelete = async (userId: number) => {
+  const handleUserDelete = async (userId: string) => {
     const res = await fetch(`/api/users/${userId}`, { method: "POST" });
     const data = await res.json();
     if (data.success) {
@@ -58,7 +58,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
     }
   };
 
-  const handlePropertyDelete = async (listingId: number) => {
+  const handlePropertyDelete = async (listingId: string) => {
     const res = await fetch(`/api/listings/${listingId}`, { method: "POST" });
     const data = await res.json();
     if (data.success) {
@@ -71,7 +71,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
     }
   };
 
-  const handleOrderDelete = async (orderId: number) => {
+  const handleOrderDelete = async (orderId: string) => {
     const res = await fetch(`/api/reservations/${orderId}`, { method: "DELETE" });
     const data = await res.json();
     if (data && data.count !== undefined ? data.count > 0 : data.success) {
