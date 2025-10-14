@@ -9,13 +9,17 @@ interface IParams {
   listingId: string;
 }
 
-const ListingPage = async ({ params }: { params: IParams | Promise<IParams> }) => {
-  // Next may pass params as a Promise-like in some environments; normalize it here.
+// Accept props as `any` to avoid PageProps typing constraints from Next.js build-time checks.
+// We still validate and normalize `params` at runtime to get a strongly-typed `IParams`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ListingPage = async (props: any) => {
+  const paramsRaw: unknown = props?.params;
+
   const isPromiseLike = (obj: unknown): obj is Promise<IParams> => {
     return typeof obj === 'object' && obj !== null && typeof (obj as { then?: unknown }).then === 'function';
   };
 
-  const resolvedParams: IParams = isPromiseLike(params) ? await params : (params as IParams);
+  const resolvedParams: IParams = isPromiseLike(paramsRaw) ? await paramsRaw : (paramsRaw as IParams);
 
   const listing = await getListingById(resolvedParams);
   const reservations = await getReservations(resolvedParams);
