@@ -9,8 +9,18 @@ interface HomeProps {
   searchParams?: IListingsParams | Promise<IListingsParams>;
 }
 
-const Home = async ({ searchParams }: HomeProps) => {
-  const params = searchParams ? await searchParams : {};
+// Accept props as any to avoid Next's PageProps constraint while normalizing searchParams at runtime.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Home = async (props: any) => {
+  const searchParamsRaw: unknown = props?.searchParams;
+
+  const isPromiseLike = (obj: unknown): obj is Promise<IListingsParams> => {
+    return typeof obj === 'object' && obj !== null && typeof (obj as { then?: unknown }).then === 'function';
+  };
+
+  const resolvedSearchParams: IListingsParams = isPromiseLike(searchParamsRaw) ? await searchParamsRaw : (searchParamsRaw as IListingsParams) ?? {};
+
+  const params = resolvedSearchParams;
   const listings = await getListings(params as IListingsParams);
   const currentUser = await getCurrentUser();
 
