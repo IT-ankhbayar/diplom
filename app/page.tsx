@@ -5,10 +5,6 @@ import Container from "./components/Container";
 import EmptyState from "./components/EmptyState";
 import ListingCard from "./components/listings/ListingCard";
 
-interface HomeProps {
-  searchParams?: IListingsParams | Promise<IListingsParams>;
-}
-
 // Accept props as any to avoid Next's PageProps constraint while normalizing searchParams at runtime.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Home = async (props: any) => {
