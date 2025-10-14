@@ -6,12 +6,15 @@ import ListingClient from "./ListingClient";
 import getReservations from "@/app/actions/getReservations";
 
 interface IParams {
-  listingId: string; 
+  listingId: string;
 }
 
-const ListingPage = async ({ params }: { params: IParams }) => {
-  const listing = await getListingById(params);
-  const reservations = await getReservations(params);
+const ListingPage = async ({ params }: { params: IParams | Promise<IParams> }) => {
+  // Next may pass params as a Promise-like in some environments; normalize it here.
+  const resolvedParams: IParams = typeof (params as any)?.then === 'function' ? await (params as Promise<IParams>) : (params as IParams);
+
+  const listing = await getListingById(resolvedParams);
+  const reservations = await getReservations(resolvedParams);
   const currentUser = await getCurrentUser();
 
   if (!listing) {
