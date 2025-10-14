@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+import Image from 'next/image';
 import { useCallback } from "react";
 import { TbPhotoPlus } from "react-icons/tb";
 
@@ -87,12 +88,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 pointer-events-none">
                     {value[0] && (
                         <div className="relative w-full h-full flex items-center justify-center">
-                            <img
-                                src={value[0]}
-                                alt="Main preview"
-                                className="w-full h-full object-cover rounded"
-                                style={{ maxWidth: '100%', maxHeight: '100%' }}
-                            />
+                            <div className="w-full h-full relative rounded overflow-hidden" style={{ maxWidth: '100%', maxHeight: '100%' }}>
+                                <Image
+                                    src={value[0]}
+                                    alt="Main preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
                             <button
                                 type="button"
                                 onClick={(e) => {

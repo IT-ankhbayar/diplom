@@ -11,7 +11,11 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams | Promise<IParams> }) => {
   // Next may pass params as a Promise-like in some environments; normalize it here.
-  const resolvedParams: IParams = typeof (params as any)?.then === 'function' ? await (params as Promise<IParams>) : (params as IParams);
+  const isPromiseLike = (obj: unknown): obj is Promise<IParams> => {
+    return typeof obj === 'object' && obj !== null && typeof (obj as { then?: unknown }).then === 'function';
+  };
+
+  const resolvedParams: IParams = isPromiseLike(params) ? await params : (params as IParams);
 
   const listing = await getListingById(resolvedParams);
   const reservations = await getReservations(resolvedParams);

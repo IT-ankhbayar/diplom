@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from 'next/image';
 
 // Minimal types used by the admin UI. These keep the component strongly typed
 // without depending on Prisma types directly.
@@ -114,9 +115,11 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
                   <td className="border px-4 py-2">
                     {user.verificationImage ? (
                       <div className="flex items-start gap-4">
-                        <a href={user.verificationImage} target="_blank" rel="noopener noreferrer">
-                          <img src={user.verificationImage} alt="ID" className="w-24 h-16 object-cover rounded shadow hover:scale-150 hover:z-10 transition-transform duration-200" />
-                        </a>
+                          <a href={user.verificationImage} target="_blank" rel="noopener noreferrer">
+                            <div className="w-24 h-16 relative rounded overflow-hidden shadow hover:scale-150 hover:z-10 transition-transform duration-200">
+                              <Image src={user.verificationImage || ''} alt="ID" fill className="object-cover" />
+                            </div>
+                          </a>
                         <div className="flex flex-col justify-center min-w-[120px]">
                           {user.verificationImage && (
                             <button
