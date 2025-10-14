@@ -5,6 +5,10 @@ import Container from "./components/Container";
 import EmptyState from "./components/EmptyState";
 import ListingCard from "./components/listings/ListingCard";
 
+// This page uses server-side headers/session data (getCurrentUser).
+// Tell Next.js this route must be rendered dynamically.
+export const dynamic = 'force-dynamic';
+
 // Accept props as any to avoid Next's PageProps constraint while normalizing searchParams at runtime.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Home = async (props: any) => {
