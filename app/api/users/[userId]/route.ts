@@ -3,10 +3,12 @@ import prisma from "@/app/libs/prismadb";
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any
 ) {
+  const { params } = context;
   const { userId } = params;
-  if (!userId) {
+  if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
     return NextResponse.json({ error: "User ID required" }, { status: 400 });
   }
   try {
@@ -20,10 +22,12 @@ export async function POST(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { userId: string } }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any
 ) {
+  const { params } = context;
   const { userId } = params;
-  if (!userId) {
+  if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
     return NextResponse.json({ error: "User ID required" }, { status: 400 });
   }
   const body = await request.json();
