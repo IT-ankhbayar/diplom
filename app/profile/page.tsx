@@ -5,6 +5,8 @@ import getListings from '../actions/getListings';
 import ProfileTabs from "./ProfileTabs";
 import EmptyState from "../components/EmptyState";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProfilePage() {
   const currentUser = await getCurrentUser();
   if (!currentUser) {

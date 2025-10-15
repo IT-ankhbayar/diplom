@@ -12,6 +12,7 @@ interface IParams {
 // Accept props as `any` to avoid PageProps typing constraints from Next.js build-time checks.
 // We still validate and normalize `params` at runtime to get a strongly-typed `IParams`.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const dynamic = 'force-dynamic';
 const ListingPage = async (props: any) => {
   const paramsRaw: unknown = props?.params;
 

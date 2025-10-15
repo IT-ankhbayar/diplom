@@ -4,6 +4,8 @@ import Container from "../components/Container";
 import Heading from "../components/Heading";
 import AdminTabs from "../components/admin/AdminTabs";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "admin") {

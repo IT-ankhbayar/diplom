@@ -13,6 +13,10 @@ import Script from "next/script";
 import getCurrentUser from "./actions/getCurrentUser";
 import SearchModal from "./components/modals/SearchModal";
 
+// This layout uses server-side headers/session data (getCurrentUser).
+// Tell Next.js this route must be rendered dynamically.
+export const dynamic = 'force-dynamic';
+
 
 
 const geistSans = Geist({
