@@ -1,15 +1,20 @@
-import { getServerSession } from 'next-auth/next';
-
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import prisma from '@/app/libs/prismadb';
 
-export async function getSession() {
-    return await getServerSession(authOptions);
+// Lazily import getServerSession and authOptions at runtime so Next's static
+// analysis doesn't detect `headers()` usage during the build phase. This
+// prevents DYNAMIC_SERVER_USAGE errors when other server modules import this
+// file during build-time operations (like API route bundling).
+async function getSession() {
+    const { getServerSession } = await import('next-auth/next');
+    const { authOptions } = await import('@/pages/api/auth/[...nextauth]');
+    return await getServerSession(authOptions as any);
 }
 
 export default async function getCurrentUser() {
     try {
-        const session = await getSession();
+        // `getServerSession` may return a session-like object; use `any` locally
+        // because we imported it dynamically. We still guard runtime access.
+        const session: any = await getSession();
 
         if (!session?.user?.email) {
             return null;
