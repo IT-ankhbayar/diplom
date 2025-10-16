@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import prisma from '@/app/libs/prismadb';
 import type { AuthOptions } from 'next-auth';
 
