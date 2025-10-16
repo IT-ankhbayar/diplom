@@ -1,14 +1,17 @@
 import prisma from '@/app/libs/prismadb';
+import type { AuthOptions } from 'next-auth';
+
+type MinimalSession = { user?: { email?: string } } | null;
 
 async function getSession() {
     const { getServerSession } = await import('next-auth/next');
     const { default: authOptions } = await import('@/app/lib/auth');
-    return await getServerSession(authOptions as any);
+    return await getServerSession(authOptions as AuthOptions);
 }
 
 export default async function getCurrentUser() {
     try {
-        const session: any = await getSession();
+        const session = (await getSession()) as unknown as MinimalSession;
 
         if (!session?.user?.email) {
             return null;
