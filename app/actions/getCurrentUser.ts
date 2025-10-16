@@ -1,18 +1,11 @@
-export const dynamic = 'force-dynamic';
 import prisma from '@/app/libs/prismadb';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/lib/auth';
 import type { AuthOptions } from 'next-auth';
-
-type MinimalSession = { user?: { email?: string } } | null;
-
-async function getSession() {
-    const { getServerSession } = await import('next-auth/next');
-    const { default: authOptions } = await import('@/app/lib/auth');
-    return await getServerSession(authOptions as AuthOptions);
-}
 
 export default async function getCurrentUser() {
     try {
-        const session = (await getSession()) as unknown as MinimalSession;
+        const session = await getServerSession(authOptions as AuthOptions);
 
         if (!session?.user?.email) {
             return null;
