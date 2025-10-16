@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 import 'leaflet/dist/leaflet.css';
 import { Geist, Geist_Mono } from "next/font/google";
@@ -15,7 +17,7 @@ import SearchModal from "./components/modals/SearchModal";
 
 // This layout uses server-side headers/session data (getCurrentUser).
 // Tell Next.js this route must be rendered dynamically.
-export const dynamic = 'force-dynamic';
+
 
 
 
