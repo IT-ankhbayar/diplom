@@ -4,9 +4,10 @@ import { authOptions } from '@/app/lib/auth';
 import type { AuthOptions } from 'next-auth';
 
 export default async function getCurrentUser() {
+    const session = await getServerSession(authOptions as AuthOptions);
+    
     try {
-        const session = await getServerSession(authOptions as AuthOptions);
-
+        
         if (!session?.user?.email) {
             return null;
         }
