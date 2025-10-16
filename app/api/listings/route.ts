@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic"; // ⬅ энэ мөрийг нэм
-
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";

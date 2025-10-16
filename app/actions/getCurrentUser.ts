@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic"; // ← энэ мөрийг хамгийн дээр нэмнэ
-
 import prisma from '@/app/libs/prismadb';
 
 async function getSession() {
