@@ -1,10 +1,12 @@
+export const dynamic = "force-dynamic";
+
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import Container from "../components/Container";
 import Heading from "../components/Heading";
 import AdminTabs from "../components/admin/AdminTabs";
 
-export const dynamic = 'force-dynamic';
+
 
 export default async function AdminDashboard() {
   const currentUser = await getCurrentUser();
