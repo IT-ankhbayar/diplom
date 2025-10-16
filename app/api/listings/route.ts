@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // ⬅ энэ мөрийг нэм
+
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
         roomCount,
         bathroomCount,
         guestCount,
-        locationValue: location?.value, 
+        locationValue: location?.value,
         price: parseInt(price, 10),
         userId: new ObjectId(currentUser.id).toString(),
       },
