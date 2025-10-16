@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,71 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  name              String?
-  email             String?   @unique
-  emailVerified     DateTime?
-  image             String?
-  hashedPassword    String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  favoriteIds       String[]  @db.ObjectId
-  role              String    @default("user")
-  verified          Boolean   @default(false)
-  verificationImage String?
-
-  accounts     Account[]
-  listings     Listing[]
-  reservations Reservation[]
-}
-
 model Account {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String  @db.ObjectId
-  type              String
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  access_token      String
+  expires_at        BigInt
+  id_token          String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.String
-  access_token      String? @db.String
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.String
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scope             String
+  token_type        String
+  type              String
+  userId            String @db.ObjectId
 
   @@unique([provider, providerAccountId])
 }
 
 model Listing {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  imageSrc      String[] // Changed from String to String[]
-  createdAt     DateTime @default(now())
+  bathroomCount BigInt
   category      String
-  roomCount     Int
-  bathroomCount Int
-  guestCount    Int
+  createdAt     DateTime @db.Date
+  description   String
+  guestCount    BigInt
+  imageSrc      String[]
   locationValue String
-  userId        String?  @db.ObjectId // 👈 String? болгож байна
-  price         Int
-
-  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade) // 👈 User? болгож байна
-  reservations Reservation[]
+  price         BigInt
+  roomCount     BigInt
+  title         String
+  userId        String   @db.ObjectId
 }
 
 model Reservation {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
+  createdAt  DateTime @db.Date
+  endDate    DateTime @db.Date
   listingId  String   @db.ObjectId
-  startDate  DateTime
-  endDate    DateTime
-  totalPrice Int
-  createdAt  DateTime @default(now())
+  startDate  DateTime @db.Date
+  totalPrice BigInt
+  userId     String   @db.ObjectId
+}
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+model User {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt         DateTime  @db.Date
+  email             String    @unique
+  emailVerified     DateTime? @db.Date
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  favoriteIds       Json?
+  hashedPassword    String?
+  image             String?
+  name              String
+  role              String
+  updatedAt         DateTime  @db.Date
+  verificationImage String?
+  verified          Boolean?
 }
