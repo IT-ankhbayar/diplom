@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = 'force-dynamic';
+
 import { useState } from "react";
 import ImageUpload from "../components/Inputs/ImageUpload";
 import Container from "../components/Container";

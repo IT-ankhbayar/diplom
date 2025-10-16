@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import ClientOnly from "../components/ClientOnly";
 import getCurrentUser from '../actions/getCurrentUser';
 import getReservations from '../actions/getReservations';
@@ -5,7 +7,6 @@ import getListings from '../actions/getListings';
 import ProfileTabs from "./ProfileTabs";
 import EmptyState from "../components/EmptyState";
 
-export const dynamic = 'force-dynamic';
 
 export default async function ProfilePage() {
   const currentUser = await getCurrentUser();

@@ -1,11 +1,11 @@
+export const dynamic = 'force-dynamic';
+
 import EmptyState from '../components/EmptyState';
 import ClientOnly from '../components/ClientOnly';
-
 import getCurrentUser from '../actions/getCurrentUser';
 import PropertiesClient from './PropertiesClient';
 import getListings from '../actions/getListings';
 
-export const dynamic = 'force-dynamic';
 
 const PropertiesPage = async () => {
     const currentUser = await getCurrentUser();
