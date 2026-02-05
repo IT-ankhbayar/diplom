@@ -6,7 +6,7 @@ export async function POST(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any
 ) {
-  const { params } = context;
+  const params = await (context?.params ?? {});
   const { userId } = params;
   if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
     return NextResponse.json({ error: "User ID required" }, { status: 400 });
@@ -25,7 +25,7 @@ export async function PATCH(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any
 ) {
-  const { params } = context;
+  const params = await (context?.params ?? {});
   const { userId } = params;
   if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
     return NextResponse.json({ error: "User ID required" }, { status: 400 });

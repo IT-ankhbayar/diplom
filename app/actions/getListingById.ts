@@ -44,4 +44,5 @@ export default async function getListingById(params: IParams) {
 
     throw new Error(String(error ?? "Something went wrong"));
   }
+  
 }

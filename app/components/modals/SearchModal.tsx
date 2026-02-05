@@ -55,7 +55,7 @@ const SearchModal = () => {
         if (step !== STEPS.INFO) {
             return onNext();
         }
-        
+
         let currentQuery = {};
 
         if (params) {
@@ -84,13 +84,13 @@ const SearchModal = () => {
         const url = qs.stringifyUrl({
             url: '/',
             query: updatedQuery
-        }, { skipNull: true});
+        }, { skipNull: true });
 
         setStep(STEPS.LOCATION);
         searchModal.onClose();
 
         router.push(url);
-    },[
+    }, [
         step,
         searchModal,
         location,
@@ -119,7 +119,7 @@ const SearchModal = () => {
 
     let bodyContent = (
         <div className='flex flex-col gap-8'>
-            <Heading 
+            <Heading
                 title="Where do you wanna go?"
                 subtitle="Find the perfect location!"
             />
@@ -130,7 +130,7 @@ const SearchModal = () => {
                 }
             />
             <hr />
-            <Map center={location?.latlng} />
+            <Map country={location} center={location?.latlng} />
         </div>
     )
 
@@ -154,23 +154,23 @@ const SearchModal = () => {
     if (step === STEPS.INFO) {
         bodyContent = (
             <div className='flex flex-col gap-8'>
-                <Heading 
+                <Heading
                     title="More information"
                     subtitle='Find your perfect place!'
                 />
-                <Counter 
+                <Counter
                     title="Guests"
                     subtitle="How many guests are coming?"
                     value={guestCount}
                     onChange={(value) => setGuestCount(value)}
                 />
-                 <Counter 
+                <Counter
                     title="Rooms"
                     subtitle="How many rooms do you need?"
                     value={roomCount}
                     onChange={(value) => setRoomCount(value)}
                 />
-                 <Counter 
+                <Counter
                     title="Bathrooms"
                     subtitle="How many bathrooms do you need?"
                     value={bathroomCount}

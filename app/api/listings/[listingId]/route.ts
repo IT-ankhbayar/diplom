@@ -15,7 +15,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { params } = context ?? {};
+    const params = await (context?.params ?? {});
     const listingId = params?.listingId ?? params?.id;
 
     if (!listingId || typeof listingId !== "string") {
@@ -42,7 +42,7 @@ export async function POST(
   context: any
 ) {
   try {
-    const { params } = context ?? {};
+    const params = await (context?.params ?? {});
     const listingId = params?.listingId ?? params?.id;
 
     if (!listingId || typeof listingId !== "string") {

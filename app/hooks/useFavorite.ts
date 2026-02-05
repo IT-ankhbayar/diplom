@@ -47,7 +47,17 @@ const useFavorite = ({
             toast.success('Success');
         } catch (error: unknown) {
             console.error('Toggle favorite error:', error);
-            toast.error('Something went wrong.');
+            
+            if (axios.isAxiosError(error)) {
+                const errorMsg = error.response?.data?.details || error.response?.data?.error || error.message;
+                console.error('API Error Details:', {
+                    status: error.response?.status,
+                    data: error.response?.data,
+                });
+                toast.error(errorMsg || 'Failed to update favorite');
+            } else {
+                toast.error('Something went wrong.');
+            }
         }
     },
     [

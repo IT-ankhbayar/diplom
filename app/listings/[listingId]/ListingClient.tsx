@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
+import useCartStore from "@/app/hooks/useCartStore";
 import toast from "react-hot-toast";
-import axios from "axios";
 import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -13,12 +13,12 @@ import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { Range } from 'react-date-range';
+import { Range } from "react-date-range";
 
-const initialDateRange = {
+const initialDateRange: Range = {
   startDate: new Date(),
   endDate: new Date(),
-  key: 'selection'
+  key: "selection",
 };
 
 interface ListingClientProps {
@@ -33,69 +33,69 @@ interface ListingClientProps {
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
   reservations = [],
-  currentUser
+  currentUser,
 }) => {
   const loginModal = useLoginModal();
   const router = useRouter();
-
-  const disabledDates = useMemo(() => {
-    let dates: Date[] = [];
-
-    reservations.forEach((reservation) => {
-      const range = eachDayOfInterval({
-        start: new Date(reservation.startDate),
-        end: new Date(reservation.endDate)
-      });
-      dates = [...dates, ...range];
-    });
-
-    return dates;
-  }, [reservations]);
+  const addItem = useCartStore((s) => s.addItem);
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(listing.price);
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
-  const onCreateReservation = useCallback(() => {
-    if (!currentUser) {
-      return loginModal.onOpen();
-    }
-
-    setIsLoading(true);
-
-    axios.post('/api/reservations', {
-      totalPrice,
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
-      listingId: listing.id
-    })
-    .then(() => {
-      toast.success('Listing reserved!');
-      setDateRange(initialDateRange);
-      router.push('/trips');
-    })
-    .catch(() => {
-      toast.error('Something went wrong.');
-    })
-    .finally(() => {
-      setIsLoading(false);
+  const disabledDates = useMemo(() => {
+    let dates: Date[] = [];
+    reservations.forEach((reservation) => {
+      const range = eachDayOfInterval({
+        start: new Date(reservation.startDate),
+        end: new Date(reservation.endDate),
+      });
+      dates = [...dates, ...range];
     });
-  }, [totalPrice, dateRange, listing.id, router, currentUser, loginModal]);
+    return dates;
+  }, [reservations]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
-      const dayCount = differenceInCalendarDays(
+      let dayCount = differenceInCalendarDays(
         dateRange.endDate,
         dateRange.startDate
       );
 
-      if (dayCount && listing.price) {
-        setTotalPrice(dayCount * listing.price);
-      } else {
-        setTotalPrice(listing.price);
-      }
+      if (dayCount < 1) dayCount = 1;
+      setTotalPrice(dayCount * listing.price);
     }
   }, [dateRange, listing.price]);
+
+  const onCreateReservation = useCallback(() => {
+    if (!currentUser) return loginModal.onOpen();
+
+    if (!dateRange.startDate || !dateRange.endDate) {
+      toast.error("Огноогоо сонгоно уу.");
+      return;
+    }
+
+    let dayCount = differenceInCalendarDays(dateRange.endDate, dateRange.startDate);
+    if (dayCount < 1) dayCount = 1;
+
+    const computedTotal = dayCount * listing.price;
+
+    // ✅ ОДОО: CartItem чинь title байхгүй байсан ч OK (зөвхөн эдгээрийг хадгална)
+    addItem({
+      id: listing.id,
+      title: listing.title,
+      price: listing.price,
+      startDate: dateRange.startDate!.toISOString(),
+      endDate: dateRange.endDate!.toISOString(),
+      totalPrice: computedTotal,
+      image: listing.imageSrc?.[0],
+    });
+
+
+
+    toast.success("Сагсанд нэмэгдлээ!");
+    router.push("/cart");
+  }, [currentUser, loginModal, dateRange, addItem, listing.id, listing.price, router]);
 
   const category = useMemo(() => {
     return categories.find((item) => item.label === listing.category);
@@ -112,6 +112,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             id={listing.id}
             currentUser={currentUser}
           />
+
           <div className="grid grid-cols-1 md:grid-cols-7 md:gap-10 mt-6">
             <ListingInfo
               user={listing.user}
@@ -122,6 +123,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               bathroomCount={listing.bathroomCount}
               locationValue={listing.locationValue}
             />
+
             <div className="order-first mb-10 md:order-last md:col-span-3">
               <ListingReservation
                 price={listing.price}

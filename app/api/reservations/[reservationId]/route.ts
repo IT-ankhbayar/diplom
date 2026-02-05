@@ -11,7 +11,7 @@ export async function DELETE(
   if (!currentUser) {
     return NextResponse.error();
   }
-  const { params } = context;
+  const params = await (context?.params ?? {});
   const { reservationId } = params;
   if (!reservationId || Array.isArray(reservationId) || typeof reservationId !== 'string') {
     return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });

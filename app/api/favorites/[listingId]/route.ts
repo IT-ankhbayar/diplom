@@ -15,7 +15,7 @@ export async function POST(
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { params } = context ?? {};
+        const params = await (context?.params ?? {});
         const listingId = params?.listingId ?? params?.id;
 
         if (!listingId || Array.isArray(listingId) || typeof listingId !== "string") {
@@ -23,7 +23,7 @@ export async function POST(
         }
 
         const favoriteIds = [...(currentUser.favoriteIds || [])];
-        const updatedFavoriteIds = [...favoriteIds, listingId];
+        const updatedFavoriteIds = [...new Set([...favoriteIds, listingId])].filter(id => typeof id === 'string');
 
         const user = await prisma.user.update({
             where: {
@@ -37,7 +37,11 @@ export async function POST(
         return NextResponse.json(user);
     } catch (error) {
         console.error("POST /api/favorites/[listingId] error:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return NextResponse.json(
+            { error: "Failed to add favorite", details: errorMessage },
+            { status: 500 }
+        );
     }
 }
 
@@ -53,7 +57,7 @@ export async function DELETE(
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { params } = context ?? {};
+        const params = await (context?.params ?? {});
         const listingId = params?.listingId ?? params?.id;
 
         if (!listingId || Array.isArray(listingId) || typeof listingId !== "string") {
@@ -75,6 +79,10 @@ export async function DELETE(
         return NextResponse.json(user);
     } catch (error) {
         console.error("DELETE /api/favorites/[listingId] error:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return NextResponse.json(
+            { error: "Failed to remove favorite", details: errorMessage },
+            { status: 500 }
+        );
     }
 }
