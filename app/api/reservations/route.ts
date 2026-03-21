@@ -22,11 +22,12 @@ export async function POST(
             totalPrice: body?.totalPrice,
         });
 
-        if (parsed.error) {
+        if (parsed.error !== null) {
             return NextResponse.json({ error: parsed.error }, { status: 400 });
         }
 
-        const availability = await ensureListingAvailable(parsed.value);
+        const reservationInput = parsed.value;
+        const availability = await ensureListingAvailable(reservationInput);
 
         if (availability.error) {
             const status = availability.error === "Listing not found." ? 404 : 409;
@@ -35,11 +36,11 @@ export async function POST(
 
         const reservation = await prisma.reservation.create({
             data: {
-                    listingId: parsed.value.listingId,
+                    listingId: reservationInput.listingId,
                     userId: currentUser.id,
-                    startDate: parsed.value.startDate,
-                    endDate: parsed.value.endDate,
-                    totalPrice: parsed.value.totalPrice,
+                    startDate: reservationInput.startDate,
+                    endDate: reservationInput.endDate,
+                    totalPrice: reservationInput.totalPrice,
             },
         });
 

@@ -9,12 +9,16 @@ export type ReservationInput = {
   totalPrice: number;
 };
 
+type ReservationParseResult =
+  | { error: string; value?: never }
+  | { error: null; value: ReservationInput };
+
 export function parseReservationInput(raw: {
   listingId?: unknown;
   startDate?: unknown;
   endDate?: unknown;
   totalPrice?: unknown;
-}) {
+}): ReservationParseResult {
   const listingId = typeof raw.listingId === "string" ? raw.listingId : "";
   const startDate = new Date(raw.startDate as string);
   const endDate = new Date(raw.endDate as string);

@@ -35,14 +35,15 @@ export async function POST(request: Request) {
         totalPrice: it.totalPrice,
       });
 
-      if (parsed.error) {
+      if (parsed.error !== null) {
         return NextResponse.json(
           { error: `${parsed.error} Listing: ${it.id}` },
           { status: 400 }
         );
       }
 
-      parsedItems.push(parsed.value);
+      const reservationInput = parsed.value;
+      parsedItems.push(reservationInput);
     }
 
     const requestConflict = hasRequestConflicts(parsedItems);
