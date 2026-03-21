@@ -10,7 +10,7 @@ import {
     FiBriefcase,
 } from "react-icons/fi";
 import Avatar from "../Avatar";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MenuItem from "./MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -44,7 +44,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
 
     // ✅ Route өөрчлөгдөх үед loading-оо унтраана
     // pathname өөрчлөгдвөл шинэ хуудас руу орсон гэсэн үг
-    useMemo(() => {
+    useEffect(() => {
         setNavLoadingKey(null);
     }, [pathname]);
 

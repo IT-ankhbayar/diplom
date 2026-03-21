@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { requireAdminUser } from "@/app/lib/apiAuth";
 import prisma from "@/app/libs/prismadb";
 
 export async function DELETE(
@@ -42,6 +43,11 @@ export async function POST(
   context: any
 ) {
   try {
+    const { error } = await requireAdminUser();
+    if (error) {
+      return error;
+    }
+
     const params = await (context?.params ?? {});
     const listingId = params?.listingId ?? params?.id;
 

@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "@/app/actions/getCurrentUser";
-
-const isObjectId = (v: unknown) =>
-  typeof v === "string" && /^[a-f\d]{24}$/i.test(v);
+import { requireCurrentUser } from "@/app/lib/apiAuth";
+import {
+  type ReservationInput,
+  ensureListingAvailable,
+  hasRequestConflicts,
+  parseReservationInput,
+} from "@/app/lib/reservationValidation";
 
 export async function POST(request: Request) {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { currentUser, error } = await requireCurrentUser();
+  if (error || !currentUser) {
+    return error ?? NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
@@ -22,44 +25,67 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    // ✅ Validate ObjectId + dates
+    const parsedItems: ReservationInput[] = [];
+
     for (const it of items) {
-      if (!isObjectId(it.id)) {
+      const parsed = parseReservationInput({
+        listingId: it.id,
+        startDate: it.startDate,
+        endDate: it.endDate,
+        totalPrice: it.totalPrice,
+      });
+
+      if (parsed.error) {
         return NextResponse.json(
-          { error: `Invalid listingId (not ObjectId): ${it.id}` },
+          { error: `${parsed.error} Listing: ${it.id}` },
           { status: 400 }
         );
       }
-      const sd = new Date(it.startDate);
-      const ed = new Date(it.endDate);
-      if (isNaN(sd.getTime()) || isNaN(ed.getTime())) {
-        return NextResponse.json(
-          { error: `Invalid date range: ${it.startDate} - ${it.endDate}` },
-          { status: 400 }
-        );
-      }
+
+      parsedItems.push(parsed.value);
+    }
+
+    const requestConflict = hasRequestConflicts(parsedItems);
+    if (requestConflict.error) {
+      return NextResponse.json({ error: requestConflict.error }, { status: 409 });
+    }
+
+    const availabilityChecks = await Promise.all(
+      parsedItems.map(async (item) => ({
+        listingId: item.listingId,
+        ...(await ensureListingAvailable(item)),
+      }))
+    );
+
+    const failedCheck = availabilityChecks.find((check) => check.error);
+    if (failedCheck?.error) {
+      const status = failedCheck.error === "Listing not found." ? 404 : 409;
+      return NextResponse.json(
+        { error: `${failedCheck.error} Listing: ${failedCheck.listingId}` },
+        { status }
+      );
     }
 
     const created = await prisma.$transaction(
-      items.map((it) =>
+      parsedItems.map((item) =>
         prisma.reservation.create({
           data: {
             userId: currentUser.id,
-            listingId: it.id,
-            startDate: new Date(it.startDate),
-            endDate: new Date(it.endDate),
-            totalPrice: it.totalPrice,
-            paymentMethod: paymentMethod ?? null, // ✅ Prisma дээр нэмсэн field
+            listingId: item.listingId,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            totalPrice: item.totalPrice,
+            paymentMethod: paymentMethod ?? null,
           },
         })
       )
     );
 
     return NextResponse.json({ ok: true, reservations: created });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("Create reservation error:", e);
     return NextResponse.json(
-      { error: e?.message || "Failed to create reservation" },
+      { error: e instanceof Error ? e.message : "Failed to create reservation" },
       { status: 500 }
     );
   }

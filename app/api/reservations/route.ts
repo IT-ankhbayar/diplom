@@ -1,45 +1,51 @@
 import { NextResponse } from 'next/server';
 
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import { requireCurrentUser } from "@/app/lib/apiAuth";
+import { ensureListingAvailable, parseReservationInput } from "@/app/lib/reservationValidation";
 
 export async function POST(
     request: Request
 ) {
-    const currentUser = await getCurrentUser();
+    const { currentUser, error } = await requireCurrentUser();
 
-    if (!currentUser) {
-        return NextResponse.error();
+    if (error || !currentUser) {
+        return error ?? NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const body = await request.json();
+    try {
+        const body = await request.json();
+        const parsed = parseReservationInput({
+            listingId: body?.listingId,
+            startDate: body?.startDate,
+            endDate: body?.endDate,
+            totalPrice: body?.totalPrice,
+        });
 
-    const {
-        listingId,
-        startDate,
-        endDate,
-        totalPrice
-    } = body;
-
-    if (!listingId || !startDate || !endDate || !totalPrice) {
-        return NextResponse.error();
-    }
-
-    const listingAndReservation = await prisma.listing.update({
-        where: {
-            id: listingId
-        },
-        data: {
-            reservations: {
-                create: {
-                    userId: currentUser.id,
-                    startDate,
-                    endDate,
-                    totalPrice
-                }
-            }
+        if (parsed.error) {
+            return NextResponse.json({ error: parsed.error }, { status: 400 });
         }
-    });
 
-    return NextResponse.json(listingAndReservation);
+        const availability = await ensureListingAvailable(parsed.value);
+
+        if (availability.error) {
+            const status = availability.error === "Listing not found." ? 404 : 409;
+            return NextResponse.json({ error: availability.error }, { status });
+        }
+
+        const reservation = await prisma.reservation.create({
+            data: {
+                    listingId: parsed.value.listingId,
+                    userId: currentUser.id,
+                    startDate: parsed.value.startDate,
+                    endDate: parsed.value.endDate,
+                    totalPrice: parsed.value.totalPrice,
+            },
+        });
+
+        return NextResponse.json(reservation);
+    } catch (routeError: unknown) {
+        console.error("Create reservation error:", routeError);
+        return NextResponse.json({ error: "Failed to create reservation" }, { status: 500 });
+    }
 }

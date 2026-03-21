@@ -14,7 +14,7 @@ export default function CheckoutPage() {
     const grandTotal = useCartStore((s) => s.grandTotal);
     const clear = useCartStore((s) => s.clear);
 
-    const total = useMemo(() => grandTotal(), [grandTotal, items]);
+    const total = useMemo(() => grandTotal(), [grandTotal]);
 
     const [payTiming, setPayTiming] = useState<PayTiming>("now");
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CARD");
@@ -110,9 +110,9 @@ export default function CheckoutPage() {
 
             clear();
             router.push("/reservations");
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error(e);
-            setError(e?.message || "Checkout алдаа");
+            setError(e instanceof Error ? e.message : "Checkout алдаа");
         } finally {
             setLoading(false);
         }

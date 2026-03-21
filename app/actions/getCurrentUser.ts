@@ -5,14 +5,11 @@ import type { AuthOptions } from 'next-auth';
 import { headers } from 'next/headers'; // 👈 Next.js-ийн headers-ийг импортлов
 
 export default async function getCurrentUser() {
-    // 💡 АЛДААГ АРИЛГАХ ГОЛ АЛХАМ: 
-    // headers() функцийг дуудаж, энэ функцийг ашиглаж буй
-    // бүх хуудсыг ХАМГИЙН ЭХЭНД Dynamic болгоно.
-    headers(); 
-    
-    // getServerSession-ийг try/catch-ээс гадна үлдээх нь зөв.
+
+    headers();
+
     const session = await getServerSession(authOptions as AuthOptions);
-    
+
     try {
         if (!session?.user?.email) {
             return null;
@@ -37,7 +34,7 @@ export default async function getCurrentUser() {
             verified: currentUser.verified,
             verificationImage: currentUser.verificationImage
         };
-        
+
     } catch (error: unknown) {
         console.error('getCurrentUser error:', error);
         return null;
