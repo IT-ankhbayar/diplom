@@ -29,7 +29,7 @@ type StatColor = 'rose' | 'blue' | 'teal' | 'amber';
 type StatCardProps = {
     title: string;
     value: number;
-    icon: React.ReactElement;
+    icon: React.ReactElement<{ size?: number }>;
     color: StatColor;
     trend: string;
 };
