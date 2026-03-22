@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { toSafeUserDto } from "@/app/lib/userDto";
 import prisma from "@/app/libs/prismadb";
 import { NextResponse } from "next/server";
 
@@ -55,7 +56,7 @@ export async function POST(
             }
         });
 
-        return NextResponse.json(user);
+        return NextResponse.json(toSafeUserDto(user));
     } catch (error: unknown) {
         console.error("Registration error:", error);
         return NextResponse.json({ error: "Failed to register user." }, { status: 500 });

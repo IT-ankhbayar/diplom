@@ -43,6 +43,10 @@ GOOGLE_CLIENT_ID="..."
 GOOGLE_CLIENT_SECRET="..."
 
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="..."
+
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="replace-with-a-long-random-password"
+ADMIN_NAME="Admin"
 ```
 
 Notes:
@@ -52,12 +56,13 @@ Notes:
 - `NEXTAUTH_URL` should match the deployed site URL in non-local environments.
 - GitHub and Google provider keys are optional unless you want those login methods enabled.
 - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` is used by the image upload flow on the client.
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD` are only required when running the admin bootstrap script.
 
 ## Prisma and MongoDB Setup
 
 The Prisma schema is at [prisma/schema.prisma](/c:/Users/ankhb/diplom/prisma/schema.prisma).
 
-This project uses Prisma's MongoDB provider. The datasource should point at `DATABASE_URL`. If your local schema still has the `url = env("DATABASE_URL")` line commented out, uncomment it before generating Prisma artifacts or running the app against your database.
+This project uses Prisma's MongoDB provider. The datasource is configured from `DATABASE_URL` in source control and should stay environment-driven rather than hardcoded.
 
 Useful commands:
 
@@ -105,7 +110,7 @@ Admin creation helper:
 
 - [scripts/createAdmin.ts](/c:/Users/ankhb/diplom/scripts/createAdmin.ts)
 
-Before using it, update the hard-coded email and password in that script to secure values for your environment.
+Before using it, define secure bootstrap values in your environment.
 
 Then run:
 
@@ -118,6 +123,7 @@ The script creates the admin user if missing, or updates the existing user to:
 - `role: "admin"`
 - a fresh hashed password
 - a verified email timestamp
+- the configured `ADMIN_NAME` value when creating a new admin user
 
 ## Project Structure
 
@@ -133,6 +139,7 @@ The script creates the admin user if missing, or updates the existing user to:
 - The app is configured as a standard Next.js server application.
 - Image domains are defined in [next.config.ts](/c:/Users/ankhb/diplom/next.config.ts) for GitHub, Google, and Cloudinary-hosted images.
 - Set the same environment variables in your hosting platform that you use locally.
+- Only set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in environments where you intend to run the admin bootstrap script.
 - Make sure `NEXTAUTH_URL` matches the deployed origin exactly.
 - Make sure MongoDB is reachable from the deployment environment.
 - Run `npx prisma generate` as part of your build pipeline if your platform does not already do so.
