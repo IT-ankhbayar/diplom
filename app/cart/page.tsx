@@ -1,6 +1,7 @@
 'use client';
 
 import useCartStore from "@/app/hooks/useCartStore";
+import Image from "next/image";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +12,7 @@ export default function CartPage() {
     const removeByKey = useCartStore((s) => s.removeByKey);
     const grandTotal = useCartStore((s) => s.grandTotal);
 
-    const total = useMemo(() => grandTotal(), [grandTotal, items]);
+    const total = useMemo(() => grandTotal(), [grandTotal]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
@@ -146,9 +147,11 @@ function CartItemRow({ item, onRemove }: RowProps) {
         <div className="flex gap-5 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
             <div className="h-24 w-24 rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-300 overflow-hidden flex-shrink-0">
                 {item.image && (
-                    <img
+                    <Image
                         src={item.image}
                         alt={item.title || "listing"}
+                        width={96}
+                        height={96}
                         className="h-full w-full object-cover"
                     />
                 )}

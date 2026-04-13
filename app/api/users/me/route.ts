@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { toSafeUserDto } from "@/app/lib/userDto";
 
 export async function PATCH(request: Request) {
   const currentUser = await getCurrentUser();
@@ -14,7 +15,7 @@ export async function PATCH(request: Request) {
       where: { id: currentUser.id },
       data: { verificationImage },
     });
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(toSafeUserDto(updatedUser));
   } catch (error: unknown) {
     console.error('Failed to update verification image:', error);
     return NextResponse.json({ error: "Failed to update verification image" }, { status: 500 });

@@ -12,7 +12,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
   // Flat config: use `ignores` to exclude files/folders.
   {
-    ignores: ['.next', 'node_modules', 'public', 'dist', 'scripts', '.vscode', '.prisma'],
+    ignores: ['.next', 'node_modules', 'public', 'dist', '.vscode', '.env*', 'scripts', '.prisma'],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];

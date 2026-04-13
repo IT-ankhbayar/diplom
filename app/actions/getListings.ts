@@ -16,7 +16,7 @@ export default async function getListings(
     params: IListingsParams
 ) {
     try {
-        const { 
+        const {
             userId,
             roomCount,
             guestCount,
@@ -24,10 +24,10 @@ export default async function getListings(
             locationValue,
             startDate,
             endDate,
-            category     
+            category
         } = params;
 
-    const query: Prisma.ListingWhereInput = {};
+        const query: Prisma.ListingWhereInput = {};
 
         if (userId) {
             query.userId = userId;
@@ -58,7 +58,7 @@ export default async function getListings(
         if (locationValue) {
             query.locationValue = locationValue;
         }
-        
+
         if (startDate && endDate) {
             query.NOT = {
                 reservations: {
@@ -86,13 +86,12 @@ export default async function getListings(
         });
 
         const safeListings = listings.map((listing) => ({
-            ... listing,
+            ...listing,
             createdAt: listing.createdAt.toISOString(),
         }));
 
         return safeListings;
     } catch (error: unknown) {
-        // Log error for debugging
         console.error('getListings error:', error);
 
         if (error instanceof Error) {

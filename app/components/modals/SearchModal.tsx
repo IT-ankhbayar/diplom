@@ -117,6 +117,15 @@ const SearchModal = () => {
         return 'Back';
     }, [step]);
 
+    const mapCenter = useMemo<[number, number] | undefined>(() => {
+        if (!location?.latlng || location.latlng.length < 2) {
+            return undefined;
+        }
+
+        const [lat, lng] = location.latlng;
+        return [lat, lng];
+    }, [location]);
+
     let bodyContent = (
         <div className='flex flex-col gap-8'>
             <Heading
@@ -130,7 +139,7 @@ const SearchModal = () => {
                 }
             />
             <hr />
-            <Map country={location} center={location?.latlng} />
+            <Map country={location} center={mapCenter} />
         </div>
     )
 

@@ -27,18 +27,18 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
         setDeletingId(id);
 
         axios.delete(`/api/listings/${id}`)
-        .then(() => {
-            toast.success('Цуцалсан');
-            router.refresh();
-        })
-        .catch((error) => {
-            toast.error(error?.response?.data?.error);
-        })
-        .finally(() => {
-            setDeletingId('');
-        });
+            .then(() => {
+                toast.success('Цуцалсан');
+                router.refresh();
+            })
+            .catch((error) => {
+                toast.error(error?.response?.data?.error);
+            })
+            .finally(() => {
+                setDeletingId('');
+            });
     }, [router]);
-    return (  
+    return (
         <Container>
             <Heading
                 title="Үл хөдлөх хөрөнгө"
@@ -61,5 +61,5 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
         </Container>
     );
 }
- 
+
 export default PropertiesClient;

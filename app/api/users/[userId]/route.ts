@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
+import { requireAdminUser } from "@/app/lib/apiAuth";
+import { toSafeUserDto } from "@/app/lib/userDto";
 
 export async function POST(
   request: Request,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any
 ) {
+  const { error } = await requireAdminUser();
+  if (error) {
+    return error;
+  }
+
   const params = await (context?.params ?? {});
   const { userId } = params;
   if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
@@ -25,6 +32,11 @@ export async function PATCH(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any
 ) {
+  const { error } = await requireAdminUser();
+  if (error) {
+    return error;
+  }
+
   const params = await (context?.params ?? {});
   const { userId } = params;
   if (!userId || Array.isArray(userId) || typeof userId !== 'string') {
@@ -40,7 +52,7 @@ export async function PATCH(
         ...(verificationImage !== undefined && { verificationImage }),
       },
     });
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(toSafeUserDto(updatedUser));
   } catch (error: unknown) {
     console.error('Failed to update user:', error);
     return NextResponse.json({ error: "Failed to update user" }, { status: 500 });

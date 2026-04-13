@@ -39,7 +39,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(listing.price);
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
@@ -95,7 +94,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
     toast.success("Сагсанд нэмэгдлээ!");
     router.push("/cart");
-  }, [currentUser, loginModal, dateRange, addItem, listing.id, listing.price, router]);
+  }, [currentUser, loginModal, dateRange, addItem, listing.id, listing.imageSrc, listing.price, listing.title, router]);
 
   const category = useMemo(() => {
     return categories.find((item) => item.label === listing.category);
@@ -131,7 +130,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 onChangeDate={(value) => setDateRange(value)}
                 dateRange={dateRange}
                 onSubmit={onCreateReservation}
-                disabled={isLoading}
+                disabled={false}
                 disabledDates={disabledDates}
               />
             </div>

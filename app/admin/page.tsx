@@ -7,7 +7,6 @@ import Heading from "../components/Heading";
 import AdminTabs from "../components/admin/AdminTabs";
 
 
-
 export default async function AdminDashboard() {
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "admin") {

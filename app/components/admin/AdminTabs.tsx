@@ -1,34 +1,10 @@
 "use client";
+
 import { useState } from "react";
 import Image from 'next/image';
-
-// Minimal types used by the admin UI. These keep the component strongly typed
-// without depending on Prisma types directly.
-type AdminUser = {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
-  verificationImage?: string | null;
-  verified?: boolean | null;
-};
-
-type AdminListing = {
-  id: string;
-  title?: string | null;
-  category?: string | null;
-  price?: number | null;
-  userId?: string | null;
-};
-
-type AdminReservation = {
-  id: string;
-  userId?: string | null;
-  listing?: { title?: string | null } | null;
-  startDate?: string | Date | null;
-  endDate?: string | Date | null;
-  totalPrice?: number | null;
-};
+import { AdminListing, AdminReservation, AdminUser } from "@/app/types/admin";
+import AdminAnalytics from "@/app/admin/AnalyticsDashboard";
+// Ensure this file exists in the same folder
 
 interface AdminTabsProps {
   users: AdminUser[];
@@ -37,10 +13,11 @@ interface AdminTabsProps {
 }
 
 const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) => {
-  const [tab, setTab] = useState<string>("users");
+  const [tab, setTab] = useState<string>("analytics");
   const [localUsers, setLocalUsers] = useState<AdminUser[]>(users);
   const [localListings, setLocalListings] = useState<AdminListing[]>(listings);
   const [localReservations, setLocalReservations] = useState<AdminReservation[]>(reservations);
+
   const [message, setMessage] = useState("");
   const [propertyMessage, setPropertyMessage] = useState("");
   const [orderMessage, setOrderMessage] = useState("");
@@ -51,10 +28,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
     if (data.success) {
       setMessage("User deleted successfully.");
       setLocalUsers(localUsers.filter(u => u.id !== userId));
-      setTab("users");
       setTimeout(() => setMessage(""), 2000);
-    } else {
-      setMessage("Failed to delete user.");
     }
   };
 
@@ -64,10 +38,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
     if (data.success) {
       setPropertyMessage("Property deleted successfully.");
       setLocalListings(localListings.filter(l => l.id !== listingId));
-      setTab("properties");
       setTimeout(() => setPropertyMessage(""), 2000);
-    } else {
-      setPropertyMessage("Failed to delete property.");
     }
   };
 
@@ -77,80 +48,121 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
     if (data && data.count !== undefined ? data.count > 0 : data.success) {
       setOrderMessage("Order deleted successfully.");
       setLocalReservations(localReservations.filter(o => o.id !== orderId));
-      setTab("orders");
       setTimeout(() => setOrderMessage(""), 2000);
-    } else {
-      setOrderMessage("Failed to delete order.");
     }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-      <div className="flex gap-4 mb-6">
-        <button className={`px-4 py-2 rounded-lg shadow-sm font-semibold transition-colors duration-150 ${tab === "users" ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`} onClick={() => setTab("users")}>Users</button>
-        <button className={`px-4 py-2 rounded-lg shadow-sm font-semibold transition-colors duration-150 ${tab === "orders" ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`} onClick={() => setTab("orders")}>Orders</button>
-        <button className={`px-4 py-2 rounded-lg shadow-sm font-semibold transition-colors duration-150 ${tab === "properties" ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`} onClick={() => setTab("properties")}>Properties</button>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-2 mb-8 bg-gray-50 p-1.5 rounded-2xl w-fit">
+        {["analytics", "users", "orders", "properties"].map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${tab === t
+              ? "bg-blue-600 text-white shadow-md"
+              : "text-gray-500 hover:bg-gray-200"
+              }`}
+          >
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
       </div>
+
+      {/* Analytics Tab */}
+      {tab === "analytics" && <AdminAnalytics />}
+
+      {/* Users Tab */}
       {tab === "users" && (
-        <div className="overflow-x-auto mb-8">
-          {message && <div className="mb-4 text-green-600 font-bold">{message}</div>}
-          <table className="min-w-full bg-white border rounded-xl shadow-sm">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto">
+          {message && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg font-bold">{message}</div>}
+          <table className="min-w-full border-separate border-spacing-0">
+            <thead className="bg-gray-50 text-gray-600 text-xs uppercase">
               <tr>
-                <th className="border px-4 py-2">ID</th>
-                <th className="border px-4 py-2">Name</th>
-                <th className="border px-4 py-2">Email</th>
-                <th className="border px-4 py-2">Role</th>
-                <th className="border px-4 py-2">Баталгаажуулах зураг</th>
-                <th className="border px-4 py-2">Delete</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">ID</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Name</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Email</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Role</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Verification</th>
+                <th className="border-b px-4 py-4 text-right font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-sm divide-y">
               {localUsers.map(user => (
-                <tr key={user.id} className="hover:bg-blue-50 transition-colors">
-                  <td className="border px-4 py-2">{user.id}</td>
-                  <td className="border px-4 py-2">{user.name}</td>
-                  <td className="border px-4 py-2">{user.email}</td>
-                  <td className="border px-4 py-2">{user.role}</td>
-                  <td className="border px-4 py-2">
+                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-4 font-mono text-xs text-gray-400">{user.id.substring(0, 8)}...</td>
+                  <td className="px-4 py-4 font-medium">{user.name}</td>
+                  <td className="px-4 py-4 text-gray-500">{user.email}</td>
+                  <td className="px-4 py-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'}`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4">
                     {user.verificationImage ? (
-                      <div className="flex items-start gap-4">
-                          <a href={user.verificationImage} target="_blank" rel="noopener noreferrer">
-                            <div className="w-24 h-16 relative rounded overflow-hidden shadow hover:scale-150 hover:z-10 transition-transform duration-200">
-                              <Image src={user.verificationImage || ''} alt="ID" fill className="object-cover" />
-                            </div>
-                          </a>
-                        <div className="flex flex-col justify-center min-w-[120px]">
-                          {user.verificationImage && (
-                            <button
-                              onClick={async () => {
-                                const newVerified = !user.verified;
-                                await fetch(`/api/users/${user.id}`, {
-                                  method: "PATCH",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ verified: newVerified })
-                                });
-                                setLocalUsers(localUsers.map(u => u.id === user.id ? { ...u, verified: newVerified } : u));
-                              }}
-                              className={`mb-1 ${user.verified ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white px-2 py-1 rounded transition w-full text-sm`}
-                            >
-                              {user.verified ? 'Баталгаажаагүй болгох' : 'Баталгаажуулах'}
-                            </button>
-                          )}
-                          {user.verified && (
-                            <span className="text-green-600 font-bold text-sm">Баталгаажсан ✔</span>
-                          )}
-                          {!user.verified && (
-                            <span className="text-gray-500 text-xs mt-1">Зураг дээр дарж томоор харах боломжтой.</span>
-                          )}
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 relative rounded-lg overflow-hidden border group cursor-zoom-in">
+                          <Image src={user.verificationImage} alt="ID" fill className="object-cover group-hover:scale-110 transition" />
                         </div>
+                        <button
+                          onClick={async () => {
+                            const newStatus = !user.verified;
+                            await fetch(`/api/users/${user.id}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ verified: newStatus })
+                            });
+                            setLocalUsers(localUsers.map(u => u.id === user.id ? { ...u, verified: newStatus } : u));
+                          }}
+                          className={`text-xs px-2 py-1 rounded font-bold ${user.verified ? 'text-orange-600 bg-orange-50' : 'text-green-600 bg-green-50'}`}
+                        >
+                          {user.verified ? 'Revoke' : 'Verify'}
+                        </button>
                       </div>
+                    ) : "-"}
+                  </td>
+                  <td className="px-4 py-4 text-right">
+                    <button onClick={() => handleUserDelete(user.id)} className="text-red-500 hover:underline font-bold">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Orders Tab */}
+      {tab === "orders" && (
+        <div className="overflow-x-auto">
+          {orderMessage && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg font-bold">{orderMessage}</div>}
+          <table className="min-w-full border-separate border-spacing-0">
+            <thead className="bg-gray-50 text-gray-600 text-xs uppercase">
+              <tr>
+                <th className="border-b px-4 py-4 text-left font-semibold">Order ID</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Listing</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Date Range</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Total Price</th>
+                <th className="border-b px-4 py-4 text-right font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm divide-y">
+              {localReservations.map(order => (
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-4 font-mono text-xs text-gray-400">{order.id.substring(0, 8)}</td>
+                  <td className="px-4 py-4 font-medium">{order.listing?.title}</td>
+                  <td className="px-4 py-4 text-gray-500 text-xs">
+                    {order.startDate && order.endDate ? (
+                      `${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}`
                     ) : (
-                      <span className="text-neutral-400">-</span>
+                      "No dates provided"
                     )}
                   </td>
-                  <td className="border px-4 py-2">
-                    <button onClick={() => handleUserDelete(user.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition">Delete</button>
+                  <td className="px-4 py-4 font-bold text-blue-600">
+                    {order.totalPrice?.toLocaleString()}₮
+                  </td>
+                  <td className="px-4 py-4 text-right">
+                    <button onClick={() => handleOrderDelete(order.id)} className="text-red-500 hover:underline font-bold">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -158,63 +170,28 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
           </table>
         </div>
       )}
-      {tab === "orders" && (
-        <div className="overflow-x-auto mb-8">
-          {orderMessage && <div className="mb-4 text-green-600 font-bold">{orderMessage}</div>}
-          <table className="min-w-full bg-white border rounded-xl shadow-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="border px-4 py-2">Order ID</th>
-                <th className="border px-4 py-2">User ID</th>
-                <th className="border px-4 py-2">Listing</th>
-                <th className="border px-4 py-2">Start</th>
-                <th className="border px-4 py-2">End</th>
-                <th className="border px-4 py-2">Total Price</th>
-                <th className="border px-4 py-2">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {localReservations.map(order => (
-                <tr key={order.id} className="hover:bg-blue-50 transition-colors">
-                  <td className="border px-4 py-2">{order.id}</td>
-                  <td className="border px-4 py-2">{order.userId}</td>
-                  <td className="border px-4 py-2">{order.listing?.title}</td>
-                  <td className="border px-4 py-2">{order.startDate ? new Date(order.startDate).toLocaleDateString() : '-'}</td>
-                  <td className="border px-4 py-2">{order.endDate ? new Date(order.endDate).toLocaleDateString() : '-'}</td>
-                  <td className="border px-4 py-2">{order.totalPrice != null ? `${order.totalPrice.toLocaleString()}₮` : '-'}</td>
-                  <td className="border px-4 py-2">
-                    <button onClick={() => handleOrderDelete(order.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+
+      {/* Properties Tab */}
       {tab === "properties" && (
-        <div className="overflow-x-auto mb-8">
-          {propertyMessage && <div className="mb-4 text-green-600 font-bold">{propertyMessage}</div>}
-          <table className="min-w-full bg-white border rounded-xl shadow-sm">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto">
+          {propertyMessage && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg font-bold">{propertyMessage}</div>}
+          <table className="min-w-full border-separate border-spacing-0">
+            <thead className="bg-gray-50 text-gray-600 text-xs uppercase">
               <tr>
-                <th className="border px-4 py-2">Property ID</th>
-                <th className="border px-4 py-2">Title</th>
-                <th className="border px-4 py-2">Category</th>
-                <th className="border px-4 py-2">Price</th>
-                <th className="border px-4 py-2">Owner ID</th>
-                <th className="border px-4 py-2">Delete</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Title</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Category</th>
+                <th className="border-b px-4 py-4 text-left font-semibold">Price</th>
+                <th className="border-b px-4 py-4 text-right font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-sm divide-y">
               {localListings.map(listing => (
-                <tr key={listing.id} className="hover:bg-blue-50 transition-colors">
-                  <td className="border px-4 py-2">{listing.id}</td>
-                  <td className="border px-4 py-2">{listing.title}</td>
-                  <td className="border px-4 py-2">{listing.category}</td>
-                  <td className="border px-4 py-2">{listing.price != null ? `${listing.price.toLocaleString()}₮` : '-'}</td>
-                  <td className="border px-4 py-2">{listing.userId}</td>
-                  <td className="border px-4 py-2">
-                    <button onClick={() => handlePropertyDelete(listing.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition">Delete</button>
+                <tr key={listing.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-4 font-medium">{listing.title}</td>
+                  <td className="px-4 py-4"><span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">{listing.category}</span></td>
+                  <td className="px-4 py-4">{listing.price?.toLocaleString()}₮</td>
+                  <td className="px-4 py-4 text-right">
+                    <button onClick={() => handlePropertyDelete(listing.id)} className="text-red-500 hover:underline font-bold">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -226,4 +203,4 @@ const AdminTabs: React.FC<AdminTabsProps> = ({ users, reservations, listings }) 
   );
 };
 
-export default AdminTabs;
+export default AdminTabs; // <--- The missing piece!

@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '@/app/libs/prismadb';
 import type { AuthOptions } from 'next-auth';
 
@@ -52,7 +52,7 @@ export const authOptions: AuthOptions = {
     pages: {
         signIn: '/',
     },
-    debug: process.env.NODE_ENV !== 'development',
+    debug: process.env.NODE_ENV === 'development',
     session: {
         strategy: 'jwt'
     },
