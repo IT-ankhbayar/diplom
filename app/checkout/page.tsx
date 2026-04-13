@@ -169,7 +169,6 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-neutral-50">
             <div className="mx-auto max-w-6xl px-4 py-8">
-                {/* header */}
                 <div className="mb-6 flex items-center gap-3">
                     <button
                         onClick={() => router.back()}
@@ -182,9 +181,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                    {/* LEFT */}
                     <div className="lg:col-span-7 space-y-4">
-                        {/* STEP 1 */}
                         <div ref={sec1Ref} className={sectionClass(1)}>
                             <div className="flex justify-between">
                                 <div className="font-bold">1. Choose when to pay</div>
@@ -221,7 +218,6 @@ export default function CheckoutPage() {
                             )}
                         </div>
 
-                        {/* STEP 2 */}
                         <div ref={sec2Ref} className={sectionClass(2)}>
                             <div className="flex justify-between">
                                 <div className="font-bold">2. Payment method</div>
@@ -265,7 +261,6 @@ export default function CheckoutPage() {
                             )}
                         </div>
 
-                        {/* STEP 3 */}
                         <div ref={sec3Ref} className={sectionClass(3)}>
                             <div className="font-bold">3. Review & Confirm</div>
 
@@ -298,11 +293,9 @@ export default function CheckoutPage() {
                         </div>
                     </div>
 
-                    {/* RIGHT */}
                     <div className="lg:col-span-5">
                         <div className="sticky top-6 rounded-2xl border bg-white p-5">
                             <div className="font-bold">Summary</div>
-                            {/*  */}
 
                             <div className="mt-3 text-sm space-y-2">
                                 <div className="flex justify-between">

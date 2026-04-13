@@ -17,7 +17,6 @@ export default function CartPage() {
         <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
             <div className="mx-auto max-w-7xl px-4 py-10">
 
-                {/* breadcrumb */}
                 <div className="mb-8 flex items-center gap-2 text-sm">
                     <span className="text-rose-500 font-semibold">🛒 Миний сагс</span>
                     <span className="text-neutral-400">›</span>
@@ -26,7 +25,6 @@ export default function CartPage() {
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
-                    {/* LEFT - ITEMS */}
                     <div className="lg:col-span-2">
                         <h1 className="mb-6 text-3xl font-bold text-neutral-900">
                             Таны захиалга
@@ -57,7 +55,6 @@ export default function CartPage() {
                         </div>
                     </div>
 
-                    {/* RIGHT - PAYMENT SUMMARY */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-8 rounded-2xl bg-white p-6 shadow-lg border border-neutral-100">
                             <div className="mb-6">
@@ -85,7 +82,6 @@ export default function CartPage() {
 
                             </div>
 
-                            {/* Payment Fees Section */}
                             <div className="space-y-3 mb-6 pb-6 border-b border-neutral-200">
                                 <h3 className="text-sm font-semibold text-neutral-800">💳 Төлбөрийн хураамж</h3>
 
